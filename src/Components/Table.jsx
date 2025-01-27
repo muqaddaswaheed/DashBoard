@@ -31,16 +31,27 @@ export const Table = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   // Handle status filter selection
-  const handleFilterStatus = () => {
+  // Updated filter logic
+const [isSorted, setIsSorted] = useState(false); // Track if data is currently sorted
+
+const handleFilterStatus = () => {
+  if (!isSorted) {
+    // Sort by status: Active first, then Inactive
     const sortedData = [...initialTableData].sort((a, b) => {
       if (a.lastActive === "Active" && b.lastActive !== "Active") return -1;
       if (a.lastActive !== "Active" && b.lastActive === "Active") return 1;
       return 0;
     });
 
-    setFilteredData(sortedData); // Update filtered data with sorted records
-    setDropdownOpen(false); // Close dropdown after selecting filter
-  };
+    setFilteredData(sortedData); // Update filtered data
+  } else {
+    // Revert back to the original state
+    setFilteredData(initialTableData);
+  }
+
+  setIsSorted(!isSorted); // Toggle the sorted state
+  setDropdownOpen(false); // Close dropdown
+};
 
 
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
@@ -188,7 +199,7 @@ export const Table = () => {
         <div className="flex space-x-3">
           <button
             onClick={() => handlePageChange(currentPage - 1)}
-            className="px-3 py-1 bg-gray-200 rounded-md text-gray-400 hover:bg-gray-300 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-3 py-1 bg-gray-500 rounded-md text-gray-400 hover:bg-gray-300 transition disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={currentPage === 1}
           >
             Previous
@@ -208,7 +219,7 @@ export const Table = () => {
           ))}
           <button
             onClick={() => handlePageChange(currentPage + 1)}
-            className="px-3 py-1 bg-blue-950 rounded-md text-gray-100 hover:bg-gray-300 transition"
+            className="px-3 py-1 bg-gray-500 rounded-md text-gray-100 hover:bg-gray-300 transition  disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={currentPage === totalPages}
           >
             Next
